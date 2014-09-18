@@ -1,0 +1,46 @@
+11 Oct 2013
+
+Modifications to allow time dependent surface tractions
+-------------------------------------------------------
+
+*{done} change *surf_list and *surf_trac to arrays of pointers, dimensioned [6] (finel.h)
+
+*{almost done, but need to handle trigger times} 
+In gen_element, near line 374, code for reading in tractions through read_surf needs
+provision for multiple calls to read_surf, as called for by the input file.
+read_surf will look for "0 #" as opposed to "0 0" to terminate a block, and if found, 
+send back a flag to gen_element instructing it to read a start time and another block.
+
+***NOTE read_surf() gets a new argument!
+
+* probably need to add to finel.h another counter, "numtsuf" for number of time-variable
+traction epochs.  Also a real array to hold the start times and a global variable to hold
+the currently pending trigger time for the next traction change.
+
+* input sequence would go as follows -- First, if numsuf != 0 then memory is
+allocated for *surf_list[0] and *surf_trac[0].  Then traction data is read 
+in as usual from the usual file and stored there.  At the end, if "0 0" termination is
+seen, the flow return to the next phase of input.  If "0 #" is seen, then isurf is 
+incremented by 1 and memory is allocated for *surf_list[isurf] and *surf_trac[isurf].
+Then read in the start time value, followed by the next block of values.  Repeat this
+until "0 0" termination is seen and then return to the input flow.
+
+* next is the execution flow in using time dependent tractions -- add  new switch 
+variable, time_data.traction, which will be tested in form_rhs() to determine
+whether to calculate traction contributions in a given time step or not.
+form_rhs() must now reference *surf_list[isurf] and *surf_trac[isurf].
+
+* finally need to add to time_step() logic to test the current time against the list of 
+trigger times and set/reset switches as needed at each time step.
+
+01 Nov 2013
+
+Time dependent surface traction modifications made in finel, generate, stiff.
+Tests for whether tractions occur in a given time step are actually done
+in form_rhs() rather than in time_step().
+Compiled successfully (a few warnings for function declaration incompatibility
+that should be fixed someday...)
+
+Not running properly... seg fault occurring during first visco step... ?
+to be investigated...
+
