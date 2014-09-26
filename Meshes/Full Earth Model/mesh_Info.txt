@@ -1,0 +1,31 @@
+Information regarding what the various saved elements 
+(Boundary Conditions) in CUBIT correspond to on the mesh. 
+
+Block 1: Mantle  (1.450e+11	1.450e+11	1.000e+21   	1.000000e+00	0.00  0.00  0.00)
+Block 2: Crust  (6.700e+10	6.700e+10	0.000000e+00	1.000000e+00	0.00  0.00  0.00)
+
+
+Sideset 1: Arbitrary choice (was used for surface forces, which is set to zero in the
+	   spherical Earth model)
+Sideset 2: Core-Mantle Boundary (Buoyancy: 5.0e+4)
+Sideset 3: Mantle-Crust Boundary (Buoyancy: 1.96e+2)
+Sideset 4: Crust-Air Boundary  (Buoyancy: 3.293e+4)
+
+Nodeset 1: Fixed in x (3 points at the bottom of the half sphere)
+Nodeset 2: Fixed in y (3 points at the bottom of the half-sphere)
+Nodeset 3: Fixed in z (3 points at the bottom of the half-sphere)
+Nodeset 4: Identified nodes to Plot Data in output .png files using matplotlib
+	   Not used in the spherical model configuration
+	   (3 points at the bottom of the half-sphere were chosen)
+Nodeset 5: Split Nodes (The Fault Plane) 
+
+Slip-Parameters:
+	Slip Magnitude: 10m 
+	B-Vector: 1 0 0 
+	S-Vector: x = 0 y = -0.970296 z = 0.241922
+
+
+GeoFEST Tweaks:
+Be sure to set surface forces to zero in eldata.dat
+Number of Split Nodes needs to be set in eldata.dat?
+
