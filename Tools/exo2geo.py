@@ -450,7 +450,8 @@ while len(line) != 0:
 					fltGroups.append(nodes)
 				else:
 					if int(data[0][-1]) > 4:
-						raise(IOError, "too many nodesets for command line options")
+						print 'More than 5 nodesets are present, nothing is handled above nodeset 5'
+						# raise(IOError, "too many nodesets for command line options")
 					else:
 						print 'Getting nodes to plot'
 						plotNodes = nodes
