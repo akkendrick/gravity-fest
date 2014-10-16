@@ -31,6 +31,9 @@ eldata.dat
 surfdata.dat
 buoydata.dat
 
+Argument Handling: 
+usage: exo2geo.py [-h] [-ut UT] [-split] [-radial] file
+
 TODO:
 
 - Improve program robustness: currently program does basic checking for malformed input.
@@ -89,7 +92,7 @@ def writeBCC(bcc):
 	bccFile.write("0 0\n")
 	bccFile.close()
 
-def writeElData(elems, numat, numsuf, numbuoy):
+def writeElData(elems, numat, numsuf, numbuoy, numSplit):
 	print 'Writing element connectivity data...'
 	elemFile = open('eldata.dat', 'w')
 	elemFile.write('NUMEL ' + str(len(elems)) + '\n' +
@@ -97,7 +100,7 @@ def writeElData(elems, numat, numsuf, numbuoy):
 					'NUMAT ' + str(numat) +'\n' +
 					'NUMSUF ' + str(numsuf) + '\n' +
 					'NUMBUOY ' + str(numbuoy) + '\n' +
-					'NSPLIT ' + str(numsplit) + '\n\n0\n\n')
+					'NSPLIT ' + str(numSplit) + '\n\n0\n\n')
 
 	for i in range(1, numat+1):
 		vals = raw_input("Enter space separated float values for lambda mu eta n " + \
@@ -185,7 +188,7 @@ def writeBuoyData(buoyData):
 
 
 # FIXME PRESUMES NODE MEMBERSHIP IN ONLY ONE FAULT
-def writeSplitData(splitData):
+def writeSplitData(splitData, numSplit):
 	print 'Writing split node file...'
 	splitFile = open('fltdata.dat', 'w')
 	print 'The Cubit file has nodesets specifying ' + str(len(splitData)) + ' faults.'
@@ -207,7 +210,7 @@ def writeSplitData(splitData):
 
 		for line in faultNodes:
 			splitFile.write(str(line) + ' 1 ' + bVector + ' ' + sVector + ' ' + str(faultNum) + ' ' + slip + '\n')
-			numsplit += 1
+			numSplit += 1
 
 		faultNum += 1
 
@@ -390,7 +393,7 @@ totalSimTime = 0
 numat = 0
 numsuf = 0
 numbuoy = 0
-numsplit = 0
+numSplit = 0
 numNodes = 0
 
 
@@ -451,7 +454,7 @@ while len(line) != 0:
 				else:
 					if int(data[0][-1]) > 4:
 						print 'More than 5 nodesets are present, nothing is handled above nodeset 5'
-						# raise(IOError, "too many nodesets for command line options")
+						#raise(IOError, "too many nodesets for command line options")
 					else:
 						print 'Getting nodes to plot'
 						plotNodes = nodes
@@ -547,12 +550,12 @@ out.write(' '.join(plotNodes)+'\n')
 out.close
 
 # have to do this at the end since BCC and element data requires reads from multiple node lists.
-writeElData(elems, numat, numsuf, numbuoy)
+writeElData(elems, numat, numsuf, numbuoy, numSplit)
 writeBCC(bcc)
 writeBuoyData(buoyData)
 writeBCVData()
 writePrintData()
-writeSplitData(fltGroups)
+writeSplitData(fltGroups, numSplit)
 writeBasicData(filename, numNodes)
 exoFile.close()
 
