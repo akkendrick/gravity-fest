@@ -1,6 +1,6 @@
-OkubuB_v2_stage4.out
+OkubuB_SS_1.out
 First try of OkuboB v2*
-based Okubo paper*
+based on Okubo paper; nontaper fault*
 
 ELASTIC1	1
 ELAS_OUT1	1
@@ -24,7 +24,7 @@ NPRINTELS 0
 NTIMEGROUPS 1
 NREFORM 1
 NBACKUP 5000
-NFLTGROUPS 2
+NFLTGROUPS 1
 
 0
 
