@@ -1,6 +1,6 @@
-OkuboE_stage3.out
-Replication of OkuboE*
-Thrust fault configuration*
+OkuboTH_1.out
+Okubo 30 degree thrust fault, first try*
+Non-tapered fault configuration*
 
 ELASTIC1	1
 ELAS_OUT1	1
@@ -19,12 +19,12 @@ NRATES 0
 SAVE_SHAPE 1
 SOLVER 2
 NUMGROUPS 1
-NPRINTNODES -1
+NPRINTNODES 8120
 NPRINTELS 0
 NTIMEGROUPS 1
 NREFORM 1
 NBACKUP 5000
-NFLTGROUPS 2
+NFLTGROUPS 1
 
 0
 
