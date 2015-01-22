@@ -1,6 +1,6 @@
-Maule_1.out
+Maule_3.out
 Model of Maule fault in Chile*
-3 fixed CMB points*
+3 fixed CMB points, rerun after code mods to output multiple times*
 
 ELASTIC1	1
 ELAS_OUT1	1
@@ -19,7 +19,7 @@ NRATES 0
 SAVE_SHAPE 1
 SOLVER 2
 NUMGROUPS 1
-NPRINTNODES 1277
+NPRINTNODES -1
 NPRINTELS 0
 NTIMEGROUPS 1
 NREFORM 1
