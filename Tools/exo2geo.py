@@ -103,17 +103,20 @@ def writeElData(elems, numat, numsuf, numbuoy, numSplit):
 					'NSPLIT ' + str(numSplit) + '\n\n0\n\n')
 
 	for i in range(1, numat+1):
-		vals = raw_input("Enter space separated float values for lambda mu eta n " + \
-							" gx gy gz for the material corresponding to block #" + \
-							str(i) +": ")
-		try:
-			v = map(float, vals.split())
-			if len(v) != 7:
-				raise IOError('Wrong number of values.')
-		except (ValueError, IOError):
-			print "Non-float or wrong number of values entered!"
-			elemFile.close()
-			sys.exit(1)
+                while True:
+                        try:
+                                vals = raw_input("Enter space separated float values for lambda mu eta n " + \
+                                                 " gx gy gz for the material corresponding to block #" + \
+                                                 str(i) +": ")
+                                
+                                v = map(float, vals.split())
+                                if len(v) != 7:
+                                        raise IOError('Wrong number of values.')
+                        except (ValueError, IOError):
+                                print "Non-float or wrong number of values entered!"
+                        else:
+                                break
+
 		elemFile.write(vals+'\n')
 
 	elemFile.write('\n')
@@ -126,38 +129,42 @@ def writeElData(elems, numat, numsuf, numbuoy, numSplit):
 def writeSurfData(elsSides, totalSimTime):
 	print 'Writing surface traction data...'
 	sideList = open('surfdata.dat', 'w')
-	num_epochs = raw_input("Enter the number of epochs in this run: ")
-	try:
-		num_epochs = int(num_epochs)
-	except ValueError:
-		print "Not an integer!"
-		sideList.close()
-		sys.exit(1)
+        while True:
+                try:
+                	num_epochs = raw_input("Enter the number of epochs in this run: ")
+                        num_epochs = int(num_epochs)
+                except ValueError:
+                        print "Not an integer!"
+                else:
+                        break
 
+ 
 	for i in range(1, num_epochs+1):
-		forceVector = raw_input("Enter the force of surface traction on sideset 1" + \
-								" in epoch number " + str(i) + \
-								" as a floating point vector \"X Y Z\": ")
-		try:
-			v = map(float, forceVector.split())
-			if len(v) != 3:
-				raise IOError("Wrong number of values.")
-		except (ValueError, IOError):
-			print "Not a valid vector of three floats."
-			sideList.close()
-			sys.exit(1)
+                while True:
+                        try:
+                                forceVector = raw_input("Enter the force of surface traction on sideset 1" + \
+                                                        " in epoch number " + str(i) + \
+                                                        " as a floating point vector \"X Y Z\": ")
+                                v = map(float, forceVector.split())
+                                if len(v) != 3:
+                                        raise IOError("Wrong number of values.")
+                        except (ValueError, IOError):
+                                print "Not a valid vector of three floats."
+                        else:
+                                break
 
+                                        
 		if i > 1:
-			startTime = raw_input("Enter a time in years for the start of this epoch: ")
-			try:
-				startTime = float(startTime)*secsInYear
-				if startTime > totalSimTime or startTime < 0:
-					raise IOError("Bad start time.")
-			except (ValueError, IOError):
-				print "Not a valid start time."
-				sideList.close()
-				sys.exit(1)
-
+                        while True:
+                                try:
+                                        startTime = raw_input("Enter a time in years for the start of this epoch: ")
+                                        startTime = float(startTime)*secsInYear
+                                        if startTime > totalSimTime or startTime < 0:
+                                                raise IOError("Bad start time.")
+                                except (ValueError, IOError):
+                                        print "Not a valid start time."
+                                else:
+                                        break
 			sideList.write('0 1\n\n'+str(startTime)+'\n')
 
 		for line in elsSides:
@@ -171,11 +178,22 @@ def writeBuoyData(buoyData):
 	buoyFile = open('buoydata.dat', 'w')
 	ssN = 2
 	for sideSet in buoyData:
-		forceVector = raw_input("Enter the direction of buoyancy on sideset " + str(ssN) + \
-			" as a floating point vector \"X Y Z\": ")
-		if len(forceVector.split()) != 3:
-			sys.stderr.write("User input error: wrong dimension of vector entered.")
-		buoyancy = raw_input("Enter a buoyancy value (rho*g): ")
+                while True: 
+                        forceVector = raw_input("Enter the direction of buoyancy on sideset " + str(ssN) + \
+                                                " as a floating point vector \"X Y Z\": ")
+                        if len(forceVector.split()) != 3:
+                                print "User input error: wrong dimension of vector entered."
+                        else:
+                                break
+                while True:
+                        try:
+                                buoyancy = raw_input("Enter a buoyancy value (rho*g): ")
+                                test = float(buoyancy)
+                        except ValueError:
+                                print "Not a number!"
+                        else:
+                                break
+
 		ssLen = len(sideSet)
 		if (args.radial):
 			ssLen = -ssLen
@@ -195,18 +213,32 @@ def writeSplitData(splitData, numSplit):
 	faultNum = 1
 	for faultNodes in splitData:
 
-		bVector = raw_input("Enter a B vector for fault " + str(faultNum) + \
-			" as a floating point vector \"X Y Z\": ")
-		if len(bVector.split()) != 3:
-			sys.stderr.write("User input error: wrong dimension of vector entered.")
+                while True: 
+                        bVector = raw_input("Enter a B vector for fault " + str(faultNum) + \
+                                            " as a floating point vector \"X Y Z\": ")
+                        if len(bVector.split()) != 3:
+                                print "User input error: wrong dimension of vector entered."
+                        else:
+                                break
 
-		sVector = raw_input("Enter an S vector for fault " + str(faultNum) + \
-			" as a floating point vector \"X Y Z\": ")
-		if len(sVector.split()) != 3:
-			sys.stderr.write("User input error: wrong dimension of vector entered.")
+                while True:
+                        sVector = raw_input("Enter an S vector for fault " + str(faultNum) + \
+                                            " as a floating point vector \"X Y Z\": ")
+                        if len(sVector.split()) != 3:
+                                print "User input error: wrong dimension of vector entered."
+                        else:
+                                break
 
-		slip = raw_input("Enter a slip amount for all nodes on fault " + str(faultNum) + \
-			" as a single floating point value:")
+                while True:
+                        try:
+                                slip = raw_input("Enter a slip amount for all nodes on fault " + str(faultNum) + \
+                                                 " as a single floating point value:")
+                                test = float(slip)
+                        except ValueError:
+                                print "Not a number!"
+                        else:
+                                break
+
 
 		for line in faultNodes:
 			splitFile.write(str(line) + ' 1 ' + bVector + ' ' + sVector + ' ' + str(faultNum) + ' ' + slip + '\n')
@@ -219,9 +251,12 @@ def writeSplitData(splitData, numSplit):
 def writeUndersideData(elsSides):
 	print 'Writing surface traction data...'
 	sideList = open('underside.dat', 'w')
-	forceVector = raw_input("Enter a floating point {X,Y,Z} as \"X Y Z\" vector for surface traction: ")
-	if len(forceVector.split()) != 3:
-		sys.stderr.write("User input error: wrong dimension of vector entered.")
+        while True:
+                forceVector = raw_input("Enter a floating point {X,Y,Z} as \"X Y Z\" vector for surface traction: ")
+                if len(forceVector.split()) != 3:
+                        print "User input error: wrong dimension of vector entered."
+                else:
+                        break
 	for line in elsSides:
 		sideList.write(' '.join(map(str, line)) + ' ' + forceVector + "\n")
 	sideList.write("0 0\n")
@@ -278,23 +313,28 @@ def writePrintData():
 def writeTimeData():
 	timeData = open('time.dat', 'w')
 	print "Writing to time.dat..."
+        
+        while True:
+                try:
+                        totalSimTime = raw_input("Enter the total length of the run in years: ")
+                        totalSimTime = float(totalSimTime)*secsInYear
+                except ValueError:
+                        print "Not a number!"
+                else:
+                        break
+                                
+                        
 
-	totalSimTime = raw_input("Enter the total length of the run in years: ")
-	try:
-		totalSimTime = float(totalSimTime)*secsInYear
-	except ValueError:
-		print "Not a number!"
-		bcv.close()
-		sys.exit(1)
+        while True:
+                try:
+                        timeStep = raw_input("Enter the length of one time step in years: ")
+                        timeStep = float(timeStep)*secsInYear
+                except ValueError:
+                        print "Not a number!"
+                else:
+                        break
 
-	timeStep = raw_input("Enter the length of one time step in years: ")
-	try:
-		timeStep = float(timeStep)*secsInYear
-	except ValueError:
-		print "Not a number!"
-		bcv.close()
-		sys.exit(1)
-	
+
 	timeData.write(str(totalSimTime)+' 1.0 '+str(timeStep)+'\n\n')
 
 	while True:
@@ -309,17 +349,17 @@ def writeTimeData():
 		else:
 			break
 	for i in range (1, numOuts+1):
-		printTime = raw_input("Enter a time in years for output #"+str(i)+": ")
-		try:
-			printTime = float(printTime)*secsInYear
-		except ValueError:
-			print "Not a number!"
-			bcv.close()
-			sys.exit(1)
-		if printTime > totalSimTime or printTime < 0:
-			print "Not a valid print time!"
-			bcv.close()
-			sys.exit(1)
+                while True:
+                        try:
+                                printTime = raw_input("Enter a time in years for output #"+str(i)+": ")
+                                printTime = float(printTime)*secsInYear
+                        except ValueError:
+                                print "Not a number!"
+                        else:
+                                if printTime > totalSimTime or printTime < 0:
+                                        print "Not a valid print time!"
+                                else:
+                                        break
 		timeData.write(str(printTime)+'\n')
 
 	timeData.close()
