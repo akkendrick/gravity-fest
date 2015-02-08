@@ -297,17 +297,15 @@ def writeTimeData():
 	
 	timeData.write(str(totalSimTime)+' 1.0 '+str(timeStep)+'\n\n')
 
-	while True:
-		try:
-			numOuts = raw_input("Number of times in the run to produce output: ")
-			numOuts = int(numOuts)
-		except ValueError:
-			print "Not an integer!"
-			#bcv.close()
-			#sys.exit(1)
-			#timeData.write(str(numOuts)+'\n')
-		else:
-			break
+	numOuts = raw_input("Number of times in the run to produce output: ")
+	try:
+		numOuts = int(numOuts)
+	except ValueError:
+		print "Not an integer!"
+		bcv.close()
+		sys.exit(1)
+	timeData.write(str(numOuts)+'\n')
+
 	for i in range (1, numOuts+1):
 		printTime = raw_input("Enter a time in years for output #"+str(i)+": ")
 		try:
