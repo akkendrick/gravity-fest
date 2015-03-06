@@ -126,6 +126,7 @@
 #define NSPLITATTR       24
 #define REFINE_THRESHOLD      1.99e-4 
 #define SLIP_TOL      1.0e-2 
+#define BIG_G      6.674e-11 
 
 /*  global parameters  */
 
@@ -135,7 +136,7 @@ EXTERN  int             nproc ;
 EXTERN  int             num_node_terms ;
 EXTERN  int             num_face_terms ;
 EXTERN  int             num_element_terms ;
-EXTERN  char            msg[MAX_STRING_LENGTH] ;
+/* EXTERN  char            msg[MAX_STRING_LENGTH] ; */
 
 /******************************************/  
 struct split_node_info
@@ -316,10 +317,12 @@ struct buoy_data
   int   tally ;
   real  upvec[3] ;
   real  rho_g ;
+  real  little_g ;
   real  delta_rho ;
   real  *dgrav ;
   int   *buoy_list ;
   int   rad_flag ;
+  int   grav_out_flag ;
 } ;
 typedef  struct buoy_data BUOY_DATA ;
 

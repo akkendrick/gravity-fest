@@ -75,6 +75,9 @@ int compare_integers (const void *a, const void *b) {
 /*---------------------------------------------------------------------------*/
 
     {
+     char            msg[MAX_STRING_LENGTH] ;
+
+
      switch(code)
         {
          case ITER:
@@ -91,8 +94,9 @@ int compare_integers (const void *a, const void *b) {
                fe_sys.neq) ;     
            break;
         }
-     printf("Out of solver; entering put_soln()...\n");
-     
+     sprintf(msg,"Out of solver; updating solution (put_soln)...\n") ;
+     squawk(msg);
+
 
      put_soln( &force , global.id_pointer ) ;
     }
@@ -1705,8 +1709,9 @@ subsequent steps, rather than relative reduction.
  /* gl,cdn: fix to address ringing issue in solver convergence algorithm */
 
       printf("PCG is converged; clearing for next step...(neq=%d)\n",neq) ;
+      fflush(stdout);
       clear_real(guess,neq) ;
-      printf("Clearing done.\n") ;
+   /*   printf("Clearing done.\n") ; */
   }
   
 /************************** end of pcg_loop **********************************/ 

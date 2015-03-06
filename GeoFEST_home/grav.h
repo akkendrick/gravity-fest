@@ -105,7 +105,8 @@
                  real big_g ,
                  ELEMENT_DATA  *del_pt ,
                  ELEMENT_DATA  *rel_pt ,
-                 real *fmid
+                 real *fmid ,
+                 int  rad_code
                 );
 
 /*  RETURN VALUE:  -none- */

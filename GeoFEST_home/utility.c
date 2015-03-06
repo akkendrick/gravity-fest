@@ -275,7 +275,7 @@
   {
    if( iam == 0 )
       {
-       printf(message); fflush(stdout);
+       printf(message,"%s\n"); fflush(stdout);
       }   
   }
   

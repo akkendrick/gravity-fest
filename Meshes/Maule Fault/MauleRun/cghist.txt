@@ -1,4 +1,4 @@
-time=0 converged in 947 iterations
-starting norm=8.69379e+17 , ending norm=0.847162
-time=3.15576e+07 converged in 974 iterations
-starting norm=7.99579e+12 , ending norm=7.36671e-06
+time=0 converged in 942 iterations
+starting norm=2.82108e+18 , ending norm=2.53227
+time=3.15576e+07 converged in 976 iterations
+starting norm=2.04991e+13 , ending norm=1.91158e-05

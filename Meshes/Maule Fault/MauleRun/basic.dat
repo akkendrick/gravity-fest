@@ -1,6 +1,6 @@
-Maule_3.out
+Maule_4.out
 Model of Maule fault in Chile*
-3 fixed CMB points, rerun after code mods to output multiple times*
+3 fixed CMB points, added afterslip down dip*
 
 ELASTIC1	1
 ELAS_OUT1	1
