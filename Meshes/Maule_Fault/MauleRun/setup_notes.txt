@@ -50,3 +50,12 @@ bzf=cosd(rkf)*0.3090169;
 
 output vectors and format to GeoFEST...
 
+Notes on contents of Maule_faultV2.mat file:
+As detailed above, spf and rkf arrays contain the slip amplitudes and rakes at the FEM mesh locations; those locations are in xfem and rfem (which is the along-dip projection of fem).
+
+The upper case arrays S and SMAG contain the plottable slip values interpolated to a regular 51x51 spacing; those locations are in U and V.  S is the slip interpolated from Delouis, and SMAG is the slip interpolated to the fem mesh before being interpolated back to the plot space.  Comparison is good, except fem fault plane is a little truncated horizontally, extending to +/- 250 km, while the original Delouis go out to +/- 340 km.
+
+Plan for simulating down-dip after slip — Apply an added slip of 7 meters, rake unchanged at all the Delouis fault plane points between u= +/- 220 km and v between -142 and -182 km.  Plan to add this to the interpolation data and re-run for comparison…
+
+
+

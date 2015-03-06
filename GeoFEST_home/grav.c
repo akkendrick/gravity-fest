@@ -57,6 +57,7 @@ static real
       real   xpt[3][10] , str_ctr[9] , midpt[3] , fmid[3] , dvol , w_det ,
              ed , dmass , density , big_g , delta_rho , little_g , dgnet ;
       real   *shape_ptr , *det_ptr , *sh , *dgrav , *up_ptr , *wt , rho_g , dN ;
+      real   upx , upy , upz , length ;
       ELEMENT_DATA   *el_pt , *bel_pt , *del_pt ;
       ELEMENT_MAT   *mat_pt ;
       BUOY_DATA      *buoy_ptr , *receive_ptr , *donor_ptr ;
@@ -119,6 +120,7 @@ g and geoid calculation for that facet.
 		for (i=0 ; i < (grp_ptr->el_info)->numbuoy ; i++)  /* loop over facets */
 			   {
 				buoy_ptr = (grp_ptr->el_info)->buoy + i ;
+				if(buoy_ptr->grav_out_flag == 0) continue ;
 				numface = buoy_ptr->numface ;
 				
 				for(n=0 ; n<numface ; n++)
@@ -132,13 +134,11 @@ g and geoid calculation for that facet.
 			   }   /* numbuoy loop */
       /*   initialization complete    */
            
-           
+           big_g  = BIG_G ;
            
            for ( nel = 0 ; nel < numel ; nel++)
                    {
                     el_pt = grp_ptr->el_data + nel ;
-                    big_g  = *(mat_pt->big_g + el_pt->mat) ;
-                    little_g  = *(mat_pt->little_g + el_pt->mat) ;
                     density  = *(mat_pt->density + el_pt->mat) ;
                     nint = el_pt->nint ;
 	            	shape_ptr = (save_shape)? el_pt->shape: sh_temp ;
@@ -237,6 +237,7 @@ g and geoid calculation for that facet.
                       for (i=0 ; i < (grp_ptr->el_info)->numbuoy ; i++)  /* loop over facets */
                            {
 							buoy_ptr = (grp_ptr->el_info)->buoy + i ;
+							if(buoy_ptr->grav_out_flag == 0) continue ;
 							buoy_list = buoy_ptr->buoy_list ;
 							numface = buoy_ptr->numface ;
 							rho_g = buoy_ptr->rho_g ;
@@ -269,9 +270,12 @@ g and geoid calculation for that facet.
                         for (i=0 ; i < (grp_ptr->el_info)->numbuoy ; i++)  /* outer loop over facets */
                            {
 							receive_ptr = (grp_ptr->el_info)->buoy + i ;
+							if(receive_ptr->grav_out_flag == 0) continue ;
 							buoy_list = receive_ptr->buoy_list ;
 							numface = receive_ptr->numface ;
 							rad_code = receive_ptr->rad_flag ;
+							up_ptr = receive_ptr->upvec ;
+							little_g = receive_ptr->little_g ;
                             
 							for(n=0 ; n<numface ; n++)
 							   {
@@ -279,7 +283,6 @@ g and geoid calculation for that facet.
 								el_pt = grp_ptr->el_data + bnel ;
 								side = (int) *(buoy_list + 2*n + 1) ;
 								dgrav = receive_ptr->dgrav + 7*n ; /* contain 3 components of dg and scalar dV plus 3 gradients */
-								up_ptr = receive_ptr->upvec ;
 
 
                                 for (ii=0 ; ii < (grp_ptr->el_info)->numbuoy ; ii++)  /* inner loop over facets */
@@ -296,15 +299,32 @@ g and geoid calculation for that facet.
                                         del_pt = grp_ptr->el_data + dnel ;
                                         dside = (int) *(dbuoy_list + 2*nn + 1) ;
                                         dgrav_flux( dgrav , grp_ptr->el_info ,
-										   side , dside , delta_rho , up_ptr , big_g , del_pt , el_pt , fmid ) ;
+										   side , dside , delta_rho , up_ptr , big_g , del_pt , el_pt , fmid , rad_code ) ;
                                        }
                                    }
 
            /* now collect the net results... */
            
-       dgnet = little_g * ( sqrt((dgrav[0]/little_g - up_ptr[0])*(dgrav[0]/little_g - up_ptr[0]) +
-                                 (dgrav[1]/little_g - up_ptr[1])*(dgrav[1]/little_g - up_ptr[1]) +
-                                 (dgrav[2]/little_g - up_ptr[2])*(dgrav[2]/little_g - up_ptr[2])
+         if(rad_code == 0)
+            {
+             upx = up_ptr[0] ; /* rectilinear upward normal */
+             upy = up_ptr[1] ;
+             upz = up_ptr[2] ;
+            }
+          else
+            {
+             upx = fmid[0]-up_ptr[0] ; /* vector from radial origin to donor facet */
+             upy = fmid[1]-up_ptr[1] ;
+             upz = fmid[2]-up_ptr[2] ;
+             length = sqrt(upx*upx + upy*upy + upz*upz) ;
+             upx /= length ;
+             upy /= length ;
+             upz /= length ;
+            }
+
+       dgnet = little_g * ( sqrt((dgrav[0]/little_g - upx)*(dgrav[0]/little_g - upx) +
+                                 (dgrav[1]/little_g - upy)*(dgrav[1]/little_g - upy) +
+                                 (dgrav[2]/little_g - upz)*(dgrav[2]/little_g - upz)
                                 ) - ONE ) ;  /* the change in the magnitude of local g */
 
        dN = - dgrav[3]/little_g ;   /* the change in geoid height along local vertical */
@@ -532,7 +552,8 @@ g and geoid calculation for that facet.
                  real big_g ,
                  ELEMENT_DATA  *del_pt ,
                  ELEMENT_DATA  *rel_pt ,
-                 real *fmid
+                 real *fmid ,
+                 int  rad_code
                 )
 
 /*  RETURN VALUE:  -none- */
@@ -556,7 +577,7 @@ g and geoid calculation for that facet.
             ux1 , uy1 , uz1 , ux2 , uy2 , uz2 , ux3 , uy3 , uz3 , avex , avey , avez ,
             ex , ey , ez , fx , fy , fz , cdote , ux4 , uy4 , uz4 , rpt , spt ,
             reactx , reacty , reactz , centrx , centry , centrz , local_up[3] , dist , dmass ,
-            xdmid , ydmid , zdmid , xrmid , yrmid , zrmid , fluxden ;
+            xdmid , ydmid , zdmid , xrmid , yrmid , zrmid , fluxden , upx , upy , upz ;
       real  xplan[4][2]  ; /* 4 nodes by 2 components  */
       real  sh2all[48] , detall[4] ; /* 4 integration pts, 4 nodes , 3 SH's */
       real  xs[2][2] , radial[3] ;
@@ -625,6 +646,19 @@ g and geoid calculation for that facet.
          xdmid = (xx1+xx2+xx3)/THREE ;
          ydmid = (yy1+yy2+yy3)/THREE ;
          zdmid = (zz1+zz2+zz3)/THREE ;
+         
+         if(rad_code) /* up defined by radial center */
+            {
+             upx = xdmid - upvec[0] ;
+             upy = ydmid - upvec[1] ;
+             upz = zdmid - upvec[2] ;
+            }
+         else  /* up defined by fixed vector */
+            {
+             upx = upvec[0] ;
+             upy = upvec[1] ;
+             upz = upvec[2] ;
+            }
 
 
          ax = xx2 - xx1 ;    /* compute the edge vectors... */
@@ -658,24 +692,24 @@ g and geoid calculation for that facet.
          ey /= elength ;
          ez /= elength ;   /* e is a unit vector perp to the axb plane */
          
-         if(ex*upvec[0]+ey*upvec[1]+ez*upvec[2] < ZERO)    /* verify outward normal is "up" */
+         if(ex*upx+ey*upy+ez*upz < ZERO)    /* verify outward normal is "up" */
             {
              ex = -ex ;
              ey = -ey ;
              ez = -ez ;
-            }              /* note that this revision only correctly uses rectilinear upvec, -not- radial */
+            }
          
          /* now get the displacements of the face nodes... */
          
-         ux1 = *(global.del_displ + n1*ndof) ;
-         uy1 = *(global.del_displ + n1*ndof + 1) ;
-         uz1 = *(global.del_displ + n1*ndof + 2) ;
-         ux2 = *(global.del_displ + n2*ndof) ;
-         uy2 = *(global.del_displ + n2*ndof + 1) ;
-         uz2 = *(global.del_displ + n2*ndof + 2) ;
-         ux3 = *(global.del_displ + n3*ndof) ;
-         uy3 = *(global.del_displ + n3*ndof + 1) ;
-         uz3 = *(global.del_displ + n3*ndof + 2) ;
+         ux1 = *(global.displ + n1*ndof) ;
+         uy1 = *(global.displ + n1*ndof + 1) ;
+         uz1 = *(global.displ + n1*ndof + 2) ;
+         ux2 = *(global.displ + n2*ndof) ;
+         uy2 = *(global.displ + n2*ndof + 1) ;
+         uz2 = *(global.displ + n2*ndof + 2) ;
+         ux3 = *(global.displ + n3*ndof) ;
+         uy3 = *(global.displ + n3*ndof + 1) ;
+         uz3 = *(global.displ + n3*ndof + 2) ;
          avex = (ux1 + ux2 + ux3)/THREE ;
          avey = (uy1 + uy2 + uy3)/THREE ;
          avez = (uz1 + uz2 + uz3)/THREE ;
@@ -830,6 +864,19 @@ GL 10/16/09
          ydmid = (yy1+yy2+yy3+yy4)/FOUR ;
          zdmid = (zz1+zz2+zz3+zz4)/FOUR ;
 
+         if(rad_code) /* up defined by radial center */
+            {
+             upx = xdmid - upvec[0] ;
+             upy = ydmid - upvec[1] ;
+             upz = zdmid - upvec[2] ;
+            }
+         else  /* up defined by fixed vector */
+            {
+             upx = upvec[0] ;
+             upy = upvec[1] ;
+             upz = upvec[2] ;
+            }
+
          ax = xx2 - xx1 ;    /* compute the edge vectors... */
          ay = yy2 - yy1 ;
          az = zz2 - zz1 ;
@@ -877,30 +924,30 @@ GL 10/16/09
 
          /* now get the displacements of the face nodes... */
          
-         ux1 = *(global.del_displ + n1*ndof) ;
-         uy1 = *(global.del_displ + n1*ndof + 1) ;
-         uz1 = *(global.del_displ + n1*ndof + 2) ;
-         ux2 = *(global.del_displ + n2*ndof) ;
-         uy2 = *(global.del_displ + n2*ndof + 1) ;
-         uz2 = *(global.del_displ + n2*ndof + 2) ;
-         ux3 = *(global.del_displ + n3*ndof) ;
-         uy3 = *(global.del_displ + n3*ndof + 1) ;
-         uz3 = *(global.del_displ + n3*ndof + 2) ;
-         ux4 = *(global.del_displ + n4*ndof) ;
-         uy4 = *(global.del_displ + n4*ndof + 1) ;
-         uz4 = *(global.del_displ + n4*ndof + 2) ;
+         ux1 = *(global.displ + n1*ndof) ;
+         uy1 = *(global.displ + n1*ndof + 1) ;
+         uz1 = *(global.displ + n1*ndof + 2) ;
+         ux2 = *(global.displ + n2*ndof) ;
+         uy2 = *(global.displ + n2*ndof + 1) ;
+         uz2 = *(global.displ + n2*ndof + 2) ;
+         ux3 = *(global.displ + n3*ndof) ;
+         uy3 = *(global.displ + n3*ndof + 1) ;
+         uz3 = *(global.displ + n3*ndof + 2) ;
+         ux4 = *(global.displ + n4*ndof) ;
+         uy4 = *(global.displ + n4*ndof + 1) ;
+         uz4 = *(global.displ + n4*ndof + 2) ;
          avex = (ux1 + ux2 + ux3 + ux4)/4.0 ;
          avey = (uy1 + uy2 + uy3 + uy4)/4.0 ;
          avez = (uz1 + uz2 + uz3 + uz4)/4.0 ;
          
          /* ...and calculate mass flux */
          
-         if(ex*upvec[0]+ey*upvec[1]+ez*upvec[2] < ZERO)    /* verify outward normal is "up" */
+         if(ex*upx+ey*upy+ez*upz < ZERO)    /* verify outward normal is "up" */
             {
              ex = -ex ;
              ey = -ey ;
              ez = -ez ;
-            }              /* note that this revision only correctly uses rectilinear upvec, -not- radial */
+            }
          
          fluxden = ex*avex + ey*avey + ez*avez ;
             

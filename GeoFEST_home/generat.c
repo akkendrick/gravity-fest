@@ -101,6 +101,7 @@ static
     int       ien_temp[8] ;
     char *test;
     char in_string[MAX_STRING_LENGTH];
+    char            msg[MAX_STRING_LENGTH] ;
 
      /*  begin with element constants . . .  */
      
@@ -204,9 +205,9 @@ static
 	 if( time_data.gravcalc )
 		{
 		 (grp_ptr->el_mat)->density =
-			 (real *) calloc(ndof*numat,sizeof(real)) ;
+			 (real *) calloc(numat,sizeof(real)) ;
 		 if (NULL == (grp_ptr->el_mat)->density) attempt = MAT_MEM ;
-		 
+/*  no longer used ***		 
 		 (grp_ptr->el_mat)->big_g =
 			 (real *) calloc(ndof*numat,sizeof(real)) ;
 		 if (NULL == (grp_ptr->el_mat)->big_g) attempt = MAT_MEM ;
@@ -214,6 +215,7 @@ static
 		 (grp_ptr->el_mat)->little_g =
 			 (real *) calloc(ndof*numat,sizeof(real)) ;
 		 if (NULL == (grp_ptr->el_mat)->little_g) attempt = MAT_MEM ;
+*** */
 		}
 
      (grp_ptr->el_mat)->plastic=
@@ -230,8 +232,10 @@ static
 
 	 if( time_data.gravcalc )
 		{
+/*  no longer used ***		 
 		 fscanf(grav_file,"%lf",(grp_ptr->el_mat)->big_g+i) ;
 		 fscanf(grav_file,"%lf",(grp_ptr->el_mat)->little_g+i) ;
+*** */
 		 fscanf(grav_file,"%lf",(grp_ptr->el_mat)->density+i) ;
 		}
 
@@ -315,11 +319,11 @@ static
         {
          attempt = NEL_ERR ;
         }
-
+/*
      sprintf(msg,"size of int = %d , size of real = %d\n",
          (int)sizeof(int),(int)sizeof(real)) ;
      squawk(msg);
-         
+*/
      completion() ;
 
      for( nel=0 ; nel<numel ; nel++ )
@@ -490,12 +494,14 @@ static
              fscanf(buoy_file,"%d%lf%lf%lf%lf",&numface,&upvec[0],&upvec[1],&upvec[2],&rho_g);
    /*
       If gravity calculation is TRUE then for each buoy surface, we need to read in
-       delta_rho, the mass density contrast across the surface.  Previous to this,
-       we should have also read in big_g, little_g and density as material properties.
+       delta_rho, the mass density contrast across the surface, as well as the local
+       acceleration of gravity and a flag saying whether to output gravity changes
+       on this surface.
    */
              if( time_data.gravcalc )
                 {
-                 fscanf(grav_file,"%lf",&(buoy_ptr->delta_rho)) ;
+                 fscanf(grav_file,"%lf%lf%d",
+                   &(buoy_ptr->delta_rho),&(buoy_ptr->little_g),&(buoy_ptr->grav_out_flag)) ;
                 }
              buoy_ptr->upvec[0] = upvec[0] ;
              buoy_ptr->upvec[1] = upvec[1] ;
@@ -543,7 +549,7 @@ static
 
      /* allocate storage for gravity changes... */
      
-             if( time_data.gravcalc )
+             if( time_data.gravcalc && buoy_ptr->grav_out_flag )
                 {
              buoy_ptr->dgrav = (real *) calloc(numface,7*sizeof(real)) ;
              if (NULL == buoy_ptr->dgrav) attempt = BUOYLIST_MEM ;
@@ -1510,6 +1516,7 @@ wt points .
 {
     char  simtask[MAX_STRING_LENGTH] ;
     char value[MAX_STRING_LENGTH];
+    char            msg[MAX_STRING_LENGTH] ;
     int ivalue;
     real fvalue;
 

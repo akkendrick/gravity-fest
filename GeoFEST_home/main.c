@@ -37,6 +37,9 @@
 #include "strain.h"
 
 void input_phase();
+void grav_calc();
+void fail_loop();
+void failcheck();
 
 
 /*---------------------------------------------------------------------------*/
@@ -68,6 +71,7 @@ void input_phase();
      {
       int slip_all;     /* flag: all faults slip for elastic scratch */
       char line[MAX_STRING_LENGTH]; /* temp space for read-in strings*/
+      char            msg[MAX_STRING_LENGTH] ;
 
       /* 
       *  Deliver greeting.
@@ -263,7 +267,7 @@ void input_phase();
 
 
           /* Initial elastic result output is requested.**********************/
-          if(flow_control.write_initial_elas_solns == 1) 
+          if(flow_control.write_initial_elas_solns == 1  && flow_control.solve_visco == 0) 
              {
               output_phase(0, 0) ;
              }
@@ -317,6 +321,7 @@ elastic(int slip_all)
 /*---------------------------------------------------------------------------*/
     {
      int  i ;
+     char            msg[MAX_STRING_LENGTH] ;
     
      squawk("Starting elastic solution...\n") ;
 
@@ -417,13 +422,7 @@ elastic(int slip_all)
      squawk("\nCalculating elastic stresses\n") ;
      elgrp_loop( E_STRESS ) ;
      squawk("\nStresses complete\n") ;
-     
-     if( time_data.gravcalc )
-        {
-         squawk("Calculating gravity changes...\n") ;
-         elgrp_loop( GRAV_CALC ) ;
-        }
-     
+          
      squawk("Elastic solution complete.\n") ;
     }
 /*************************** end of elastic **********************************/ 
@@ -453,6 +452,7 @@ time_step()
     {
      COUNTER  i , eventnum ;
      int   step_count , cslip , fcase , anyfail ;
+     char            msg[MAX_STRING_LENGTH] ;
 
      int new_step = FALSE ;
      real time = time_data.time ;
@@ -467,10 +467,10 @@ time_step()
      squawk("\nStarting time-stepping algorithm...\n") ;
 
      force.incr_rhs = (real * ) calloc(loc_sys.neq,sizeof(real)) ;
-     clear_real(force.full_rhs,loc_sys.neq) ;
-
      if (NULL == force.incr_rhs) attempt = R_MEM ;
      completion() ;
+     clear_real(force.full_rhs,loc_sys.neq) ;
+
 
      step_count = 0 ;
 
@@ -497,6 +497,8 @@ time_step()
              time_data.dt = tstep;
              time_data.alpha_delt = tstep*alpha;
              time_data.time = time;
+             sprintf(msg,"Start of time step; t=%f , delta_t=%f \n",time,tstep) ;
+             squawk(msg);
              
              time_data.do_slip = 0;
              time_data.fail = 0 ;
@@ -636,6 +638,9 @@ time_step()
             time_data.max_strain = ZERO ;
       
              elgrp_loop( RHS_STEP ) ;
+             
+             sprintf(msg,"Stiffness and element RHS complete; make preconditioner...\n") ;
+             squawk(msg);
                
              /* Finish forming preconditioner */
              if(reform == YES && PCG == fe_sys.solver)
@@ -711,6 +716,9 @@ time_step()
                     }
                 } /* end of unlabled block introducing new_nsub, global_max_strain */
                             
+             sprintf(msg,"Entering solver...\n") ;
+             squawk(msg);
+
              if (PCG == fe_sys.solver)
                 {
                  solver( ITER ) ;
@@ -739,7 +747,7 @@ time_step()
 
              check_monitor( step_count+1) ;
                   
-             fflush( stdout ) ;
+            /* fflush( stdout ) ; */
             }     /* end loop stepping time within time group */
         }   /* end loop over time groups  */
     }
@@ -838,6 +846,7 @@ void
    int i = 0;
    real xnorm2;
    char taskstr[MAX_STRING_LENGTH];
+   char            msg[MAX_STRING_LENGTH] ;
    
    for(i=0 ; i<global.n_group ; i++)
       {
@@ -964,7 +973,7 @@ void
             xnorm2 = dot_real(force.full_rhs,force.full_rhs,loc_sys.neq_owned) ;   
          else
             xnorm2 = 0.0;
-         sprintf(msg, "After task %d: %s rhs norm squared is............... %lf\n", task,taskstr, xnorm2);
+ /*      sprintf(msg, "After task %d: %s rhs norm squared is............... %lf\n", task,taskstr, xnorm2); */
          squawk(msg);
       }
 
@@ -1421,6 +1430,7 @@ else if(RESTORE == code)
      int  flag = 0 ;
      int  n = 0 ;
      char line[MAX_STRING_LENGTH];
+     char            msg[MAX_STRING_LENGTH] ;
      
      if(nstep % time_data.nbackup == 0)
         {
