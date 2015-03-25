@@ -1,0 +1,61 @@
+fixed nodes: 121, 1602, 1982
+
+Block 1: Lower Mantle  
+Block 2: Upper Mantle  
+Block 3: Crust  (6.700e+10	6.700e+10	0.000000e+00	1.000000e+00	0.00  0.00  0.00)
+
+Sideset 1: Arbitrary choice (was used for surface forces, which is set to zero in the
+	   spherical Earth model)
+Sideset 2: Core - Lower Mantle Boundary (Buoyancy: )
+Sideset 3: Lower Mantle - Upper Mantle Boundary (Buoyancy: )
+Sideset 4: Upper Mantle - Crust Boundary  (Buoyancy: )
+Sideset 5: Crust - Air Boundary (Buoyancy: )
+
+Nodeset 1: Fixed in x (3 points forming a triangle in the core surface) 
+Nodeset 2: Fixed in y (3 points forming a triangle in the core surface)
+Nodeset 3: Fixed in z (3 points forming a triangle in the core surface)
+Nodeset 4: Identified nodes to Plot Data in output .png files using matplotlib
+	   Not used in the spherical model configuration
+Nodeset 5: Split Nodes (The Fault Plane) 
+
+
+buoyancy values:
+-480 0 0 0 0   (3500 km CMB)  4337*10.68
+-3712 0 0 0 0   (5730 km ULMB)  389*10.01
+-7668 0 0 0 0  (6340 km  Moho)  481*9.84
+-8124 0 0 0 0     (6400 km surface) 2750*9.82
+
+material values:  mu (GPa)     lambda          nu        rho
+crust               35.           40.4        .268       2750.
+upper mantle        77.          111.         .295       3490.
+lower mantle        233.          322.        .290       5003.
+
+fault interpolation w/MATLAB:
+
+load fault node locations:  xfem, yfem  (arrays)
+
+project along dip:  rfem=yfem/0.9510565;
+
+interpolate slip and rake to fault nodes:
+spf=griddata(u,v,slip,xfem,rfem,'cubic');
+rkf=griddata(u,v,rake,xfem,rfem,'cubic');
+
+calculate mechanism vectors:
+sxf=spf.*cosd(rkf);
+syf=spf.*sind(rkf)*0.9510565;
+szf=spf.*sind(rkf)*0.3090169;
+bxf=-sind(rkf);
+byf=cosd(rkf)*0.9510565;
+bzf=cosd(rkf)*0.3090169;
+
+output vectors and format to GeoFEST...
+
+Notes on contents of Maule_faultV2.mat file:
+As detailed above, spf and rkf arrays contain the slip amplitudes and rakes at the FEM mesh locations; those locations are in xfem and rfem (which is the along-dip projection of fem).
+
+The upper case arrays S and SMAG contain the plottable slip values interpolated to a regular 51x51 spacing; those locations are in U and V.  S is the slip interpolated from Delouis, and SMAG is the slip interpolated to the fem mesh before being interpolated back to the plot space.  Comparison is good, except fem fault plane is a little truncated horizontally, extending to +/- 250 km, while the original Delouis go out to +/- 340 km.
+
+Plan for simulating down-dip after slip — Apply an added slip of 7 meters, rake unchanged at all the Delouis fault plane points between u= +/- 220 km and v between -142 and -182 km.  Plan to add this to the interpolation data and re-run for comparison…
+
+
+

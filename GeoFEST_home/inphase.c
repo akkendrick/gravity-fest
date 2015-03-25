@@ -100,6 +100,7 @@ input_phase()
      char default_string[MAX_STRING_LENGTH];
      char in_string[MAX_STRING_LENGTH];
      char controlfile_string[MAX_STRING_LENGTH];
+     char            msg[MAX_STRING_LENGTH] ;
      
 /* *************************** SIM CONTROL CODES ***************** */
 /* 
@@ -652,6 +653,7 @@ gen_number()
     int   ieq_local, ieq_owned ;
     int   *id_pointer ;
     int   neq_local , ndof , numnp ;
+    char            msg[MAX_STRING_LENGTH] ;
 
      neq_local = 0 ;
      numnp = loc_sys.numnp ;
@@ -797,27 +799,35 @@ gen_number()
    
      print = 0 ;
      for(n=0 ; n<time_data.nprints ; n++) {
-         if(time_data.prt_time[n] == (-ONE)){
-            continue;
-         } else if (time > time_data.prt_time[n] - ROUNDTOL){
-            time_data.prt_time[n] = (-ONE);
-            print = 1;
-            break;
-         }
+         if(time_data.prt_time[n] == (-ONE)){ continue; }
+         else if (time > time_data.prt_time[n] - ROUNDTOL)
+            {
+             time_data.prt_time[n] = (-ONE);
+             print = 1;
+             break;
+            }
+         else
+            {
+             break;
+            }
      }
 
      if (redo)
        print = 1;
 
      if( !(print || quake) )
+        {
+         printf("No output scheduled at time = %f ; (next at %f)\n",time,time_data.prt_time[n]) ;
+         fflush(stdout);
          return ;
+        }
 
 	if(quake)
 	    printf("Performing quake output at time = %f ...\n",time) ;
 	else
-	    printf("Performing scheduled output at time = %f ...\n",time) ;
+	    printf("\n ***Performing scheduled output at time = %f ***\n\n",time) ;
 
-
+    fflush(stdout);
 
 	fprintf(out_file,
 	"\n Global coordinates & displacements & delt displacements \n") ;
@@ -853,6 +863,13 @@ gen_number()
 
 
      elgrp_loop(OUTPUT) ;
+     
+     if( time_data.gravcalc )
+        {
+         squawk("Calculating gravity changes...\n") ;
+         elgrp_loop( GRAV_CALC ) ;
+        }
+
      squawk("Output step finished.\n") ;
 
     }
@@ -1103,6 +1120,7 @@ gen_number()
 {
     char  simtask[MAX_STRING_LENGTH] ;
     char value[MAX_STRING_LENGTH];
+    char            msg[MAX_STRING_LENGTH] ;
     int ivalue;
     real fvalue;
 
@@ -1181,6 +1199,7 @@ gen_number()
 {
     char  simtask[MAX_STRING_LENGTH] ;
     char value[MAX_STRING_LENGTH];
+    char            msg[MAX_STRING_LENGTH] ;
     int ivalue;
     real fvalue;
 

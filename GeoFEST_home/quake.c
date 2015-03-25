@@ -22,6 +22,11 @@
 #include "stiff.h"
 static real
     sh_temp[256] , det_temp[9] ;
+void clear_stiff();
+void clear_real();
+void elgrp_loop();
+void solver();
+void accumulate();
 
 
 
