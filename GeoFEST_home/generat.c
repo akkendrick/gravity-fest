@@ -382,11 +382,11 @@ static
          surf_done = 0 ;
          isurf = 0 ;
          time_data.traction_time[0] = 0.0 ;
-         time_data.traction_time[1] = 1.0e+16 ;
-         time_data.traction_time[2] = 1.0e+16 ;
-         time_data.traction_time[3] = 1.0e+16 ;
-         time_data.traction_time[4] = 1.0e+16 ;
-         time_data.traction_time[5] = 1.0e+16 ;
+         time_data.traction_time[1] = 1.0e+99 ;
+         time_data.traction_time[2] = 1.0e+99 ;
+         time_data.traction_time[3] = 1.0e+99 ;
+         time_data.traction_time[4] = 1.0e+99 ;
+         time_data.traction_time[5] = 1.0e+99 ;
          time_data.currtsuf = 0.0 ;  /* current onset time */
          time_data.itsuf = 0 ;  /* current onset index */
                     printf("traction_time[0] = %lg\n",time_data.traction_time[0]) ;
@@ -477,7 +477,15 @@ static
          squawk("Surface tractions all read in . . .\n") ;
         }
      else
-         squawk("No surface tractions to process . . .\n") ;
+        {
+         time_data.traction_time[0] = 0.0 ;
+         time_data.traction_time[1] = 1.0e+99 ;
+         time_data.traction_time[2] = 1.0e+99 ;
+         time_data.traction_time[3] = 1.0e+99 ;
+         time_data.traction_time[4] = 1.0e+99 ;
+         time_data.traction_time[5] = 1.0e+99 ;
+        squawk("No surface tractions to process . . .\n") ;
+        }
 
      /*  now allocate memory and read in buoyancy surfaces... */
 

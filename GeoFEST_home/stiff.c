@@ -279,7 +279,7 @@ move_real(
                     printf("traction_time[5] = %lg\n",time_data.traction_time[5]) ;
                     do_it = 1 ;
                    }
-                else if( time_data.time >= time_data.currtsuf ) /* do  t>zero surface tractions */
+                else if( time_data.time >= time_data.currtsuf && numsuf > 0) /* do  t>zero surface tractions */
                    {
                     printf("traction index = %d , currtsuf = %lg\n",itsuf,time_data.currtsuf) ;
 /*                  surf_list = (grp_ptr->el_info) -> surf_list[itsuf] ;  */
