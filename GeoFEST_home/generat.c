@@ -587,6 +587,7 @@ static
 
      fspl = (SPLITNODE *) calloc(g_nsplit,sizeof(SPLITNODE));
      if (NULL == fspl) attempt = SPLITNODE_MEM ;
+     completion() ;
           
      read_slip( fspl, type , &nsplit, g_nsplit , ndof ) ;
 

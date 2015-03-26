@@ -1,0 +1,41 @@
+January 2015 GeoFEST mods
+
+* add new attributes to info->buoy structure; little_g and grav_out_flag
+  Latter will control whether to compute gravity changes for a particular buoyancy interface
+  There will be numbuoy of these 1 or 0 flags, read in along with delta_rho values
+  definition: DONE   read-in: DONE
+  
+* I'm also thinking it will be appropriate here to read in an interface value of little_g
+  to use for the delta_g calculation.  Looking to retire the inelegant material-based little_g
+  and big_G currently used
+  DONE
+  
+* Only allocate dgrav storage if grav_out_flag is true -DONE-
+  and also abort calc loop if it is not true -DONE-
+
+* BIG_G now defined universally in finel.h; requires recompile to change value
+  (consider changing this at some point?)  Need to properly refer to BIG_G everywhere
+  DONE
+
+* Need to properly obtain little_g in new location for delta_g calculation
+  DONE
+  
+* New format for gravin file:
+
+numat lines containing density (only)
+-followed by-
+numbuoy lines each containing delta_rho, little_g, and grav_out_flag for each interface
+
+* global.displ is used to compute grav changes, so subsequent time step evaluations
+  should yield the full accumulated changes to that time.  ***IMPORTANT*** Need to
+  change from del_displ to displ in dgrav_flux() since it is inconsistent currently
+  with dgrav_form()!
+  DONE
+  
+* remove grav output request from elastic() and simply place it inside output_phase().
+  This will cause a grav output at any time a regular output is requested.
+  DONE
+
+  
+
+  

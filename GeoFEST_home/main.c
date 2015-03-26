@@ -974,7 +974,7 @@ void
          else
             xnorm2 = 0.0;
  /*      sprintf(msg, "After task %d: %s rhs norm squared is............... %lf\n", task,taskstr, xnorm2); */
-         squawk(msg);
+    /*     squawk(msg); */
       }
 
   }

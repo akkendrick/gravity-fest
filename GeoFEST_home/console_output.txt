@@ -1,0 +1,186 @@
+[Tycho:~/fem/gravity-fest/GeoFEST_home] lyzenga% ./GeoFEST /Users/lyzenga/fem/gravity-fest/Meshes/Maule\ Fault/MauleRun/TEST /Users/lyzenga/fem/gravity-fest/Meshes/Maule\ Fault/MauleRun/TEST
+
+
+**********************************************************
+Welcome to the Geophysical Finite Element Simulation Tool (./GeoFEST)
+
+**********************************************************
+
+InputDirectoryPath set to '/Users/lyzenga/fem/gravity-fest/Meshes/Maule Fault/MauleRun/TEST'
+OutputDirectoryPath set to '/Users/lyzenga/fem/gravity-fest/Meshes/Maule Fault/MauleRun/TEST'
+
+Reading basic GeoFEST input data 
+Opening output file /Users/lyzenga/fem/gravity-fest/Meshes/Maule Fault/MauleRun/TEST/Maule_4.out ...
+
+
+Gravity file detected and opened...
+-------------Input file begins with comments:-----------
+
+Model of Maule fault in Chile
+3 fixed CMB points, added afterslip down dip
+
+---------------(End Input File Comments)--------------
+
+Flow control flags - internal defaults:
+
+Set: ELASTIC1 -> 1
+Set: ELAS_OUT1 -> 1
+Set: FIRST_SOLN_SLIPS_ALL -> 0
+Set: REFINE -> 0
+Set: REFINE_ELASTIC_PERCENT_GOAL -> 0.000000
+Set: REFINE_OUT_SMS -> 0
+Set: REFINE_OUT_TOPTRIS -> 0
+Set: REFINE_OUT -> 0
+Set: ELASTIC2 -> 0
+Set: ELAS_OUT2 -> 0
+Set: VISCO -> 1
+
+Flow control flags - regular input file:
+
+Set: ELASTIC1 -> 1
+Set: ELAS_OUT1 -> 1
+Set: REFINE -> 0
+Set: REFINE_OUT -> 0
+Set: ELASTIC2 -> 0
+Set: ELAS_OUT2 -> 0
+Set: VISCO -> 1
+No controls.fem file - continuing.
+
+
+FINAL control flags:
+
+ELASTIC1(solve initial elastic) => 1
+ELAS_OUT1(write initial elastic solutions) => 1
+FIRST_SOLN_SLIPS_ALL(first solution slips all faults) => 0
+REFINE(refine elastic solution count) => 0
+REFINE_ELASTIC_PERCENT_GOAL(refine elastic per cent goal) => 0.000000
+REFINE_OUT_SMS(write refined mesh sms file) => 0
+REFINE_OUT_TOPTRIS(write refined mesh toptris file) => 0
+REFINE_OUT(write refined mesh geofest file) => 0
+ELASTIC2(solve refined elastic) => 0
+ELAS_OUT2(write refined elastic solution) => 0
+VISCO(solve visco) => 1
+
+Now reading global parameters from basic input file:
+
+Set: NUMNP -> 28959
+Set: NSD -> 3
+Set: NDOF -> 3
+Set: NRATES -> 0
+Set: SAVE_SHAPE -> 1
+Set: SOLVER -> 2
+Set: NUMGROUPS -> 1
+Set: NPRINTNODES -> -1
+Set: NPRINTELS -> 0
+Set: NTIMEGROUPS -> 1
+Set: NREFORM -> 1
+Set: NBACKUP -> 5000
+Set: NFLTGROUPS -> 1
+Global number of nodes = 28959
+
+nsd = 3  ;  ndof = 3  ;  nrates = 0  ;  save_shape = 1  ;  solver = 2
+
+Start reading boundary info . . .
+Boundary code info input complete.
+Global b.c. map generated...
+Decomposed node and equation totals:
+Number of nodes = 28959,  equations = 86868
+Global number of equations: 86868
+Equation numbering complete...
+Coordinate generation complete...
+Displacement boundary value generation complete...
+Velocity boundary rates generation complete...
+
+Starting element generation...
+Set: NUMEL -> 151037
+Set: TYPE -> 4
+Set: NUMAT -> 3
+Set: NUMSUF -> 0
+Set: NUMBUOY -> 4
+Set: NSPLIT -> 132
+Global number of elements = 151037
+
+Global number of split nodes: 132
+Material with id: 0, 2.33e+11, 3.22e+11, 0, 1
+Material with id: 1, 7.7e+10, 1.11e+11, 0, 1
+Material with id: 2, 3.5e+10, 4.04e+10, 0, 1
+No surface tractions to process . . .
+Processing buoyancy elements. . .
+ local numface = 480
+ local numface = 3712
+ local numface = 7668
+ local numface = 8124
+Buoyancy elements all read in . . .
+Number of split nodes to read from input: 132
+Number of split node element terms: 4453
+Split nodes all processed . . .
+Generation of element group #1 complete.
+
+Generation of element group #1 complete.
+
+Doing shape functions...
+Element generation complete.  Setting up linear algebra...
+Equation setup completed.
+number of printed nodes = -1
+number of printed elements = 0
+number of time groups = 1
+number of steps per reform = 1
+number of steps per backup = 5000
+number of fault groups = 1
+Fault group #1:
+interval=5e+10   first time=0   friction coef=0   fail lim=0   fail pct=0
+
+Time data  generation complete...
+
+
+Starting Elastic Solution...
+Starting elastic solution...
+Storage arrays cleared...
+/Users/lyzenga/fem/gravity-fest/Meshes/Maule Fault/MauleRun/TEST/time.datBC's computed...
+Number of fault slip groups = 1
+Fault #1 slip occurring at t = 0 
+Fault #1 slip occurring at t = 0 
+Stiffness computed...
+After elastic step, traction index = 1 , currtsuf = 0
+traction_time[0] = 0
+traction_time[1] = 0
+traction_time[2] = 0
+traction_time[3] = 0
+traction_time[4] = 0
+traction_time[5] = 0
+Fault #1 slip occurring at t = 0 
+RHS done...
+
+Calling SOLVER
+PCG is converged; clearing for next step...(neq=86868)
+Clearing done.
+Out of solver; entering put_soln()...
+
+Out of SOLVER; begin accumulate()
+
+Calculating elastic stresses
+
+Stresses complete
+Elastic solution complete.
+Performing scheduled output at time = 0.000000 ...
+Calculating gravity changes...
+Fault #1 slip occurring at t = 0 
+Output step finished.
+
+Starting time-stepping algorithm...
+Fault #1 slip occurring at t = 0 
+traction index = 1 , currtsuf = 0
+Surface traction delta applied at t = 3.15576e+07
+Fault #1 slip occurring at t = 0 
+(Finishing preconditioner) Simulation t=31557600.000000...
+PCG is converged; clearing for next step...(neq=86868)
+Clearing done.
+Out of solver; entering put_soln()...
+(Finishing preconditioner) Simulation t=31557600.000000...
+Performing scheduled output at time = 31557600.000000 ...
+Calculating gravity changes...
+(Finishing preconditioner) Simulation t=31557600.000000...
+Output step finished.
+Normal program termination.
+499.923u 0.901s 8:21.08 99.9%	0+0k 0+23io 23pf+0w
+[Tycho:~/fem/gravity-fest/GeoFEST_home] lyzenga% 

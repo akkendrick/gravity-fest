@@ -360,7 +360,7 @@ input_phase()
 
      elgrp_loop( GENERATE ) ;   /* read in and generate element geometry */
 
-     squawk("Doing shape functions...\n") ;
+     squawk("\nDoing shape functions...\n") ;
 
      elgrp_loop( SHAPE ) ;    /* calculate element shape functions
                                  for future use */
