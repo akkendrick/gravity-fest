@@ -1,0 +1,33 @@
+Maule_6.out
+Model of Maule fault in Chile (3 fixed CMB points)*
+Viscous relaxing upper mantle run; buoyancy turned off (debug) *
+
+ELASTIC1	1
+ELAS_OUT1	1
+REFINE		0
+REFINE_OUT	0
+ELASTIC2	0
+ELAS_OUT2	0
+VISCO		1
+
+0
+
+NUMNP 28959
+NSD 3
+NDOF 3
+NRATES 0
+SAVE_SHAPE 1
+SOLVER 2
+NUMGROUPS 1
+NPRINTNODES -1
+NPRINTELS 0
+NTIMEGROUPS 1
+NREFORM 1
+NBACKUP 5000
+NFLTGROUPS 1
+
+0
+
+NO_RESTART
+
+NO_SAVE
